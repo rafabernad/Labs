@@ -3,6 +3,6 @@ Labs
 
 Small opensource stuff:
 
-_newness.InfiniteSlidingPane_
+*newness.InfiniteSlidingPane*
 
 A sliding-driven paned view manager.
