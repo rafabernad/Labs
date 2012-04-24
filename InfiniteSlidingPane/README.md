@@ -5,6 +5,12 @@ An InfiniteSlidingPane is view selector that supports pane sliding, showing one 
 
 The Panes slide in/out when pushed/popped can be dragged around and swiped off. `newness.InfiniteSlidingPane`'s default view is `newness.InfiniteSlidingView` or any derivative from it.
 
+Dependencies
+------------
+
+Onyx
+
+
 Example Usage
 -------------
 
