@@ -3,4 +3,4 @@ Labs
 
 Small opensource stuff:
 
-* newness.InfiniteSlidingPane: A sliding-driven paned view manager.
+* `newness.InfiniteSlidingPane`: A sliding-driven paned view manager for Enyo2.
