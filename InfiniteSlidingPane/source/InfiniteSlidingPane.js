@@ -144,12 +144,9 @@ enyo.kind({
 		if(this.getViewCount() === 0) {
 			return;
 		}
-		console.log("popSingle animated ", inAnimated)
 		var viewBeingPopped = this.getView();
 		if(inAnimated) {
-			console.log("to min");
-			console.log(viewBeingPopped)
-			viewBeingPopped.animateToMin();
+			viewBeingPopped.pop();
 		} else {
 			this.deleteView(viewBeingPopped);
 		}
@@ -157,7 +154,6 @@ enyo.kind({
 	_getViewTypeByName : function(viewTypeName) {
 		var viewTypeToReturn;
 		this.viewTypes.forEach(function(viewType) {
-			console.log(viewType.name, viewTypeName, viewType)
 			if(!viewTypeToReturn && viewType.name === viewTypeName) {
 				viewTypeToReturn = viewType;
 			}
