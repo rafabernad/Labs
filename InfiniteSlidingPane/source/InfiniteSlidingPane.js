@@ -58,12 +58,7 @@ enyo.kind({
 		if (curViews.length <= 1) {
 			return false;
 		}
-		this.popping = true;
-		this.view = this.views[(this.views.length - 2)];
-		this._popSingleView();
-		
-		this.viewsHaveChanged();
-		
+		this._popSingleView(true);
 		return true;
 	},
 	reset : function(viewTypeName) {
@@ -77,7 +72,8 @@ enyo.kind({
 		return newView;
 	},
 	getView : function() {
-		return this.views[((this.popping)? (this.getViewCount() - 2) : (this.getViewCount() - 1))];
+		//if animated popping, the view isn't destroyed until the animation has been completed'
+		return this.views[(this.getViewCount() - 1)];
 	},
 	getViewCount : function() {
 		return this.getViewList().length;
@@ -104,8 +100,6 @@ enyo.kind({
 			}
 		});
 		if(deletableView) this.deleteView(deletableView);
-		this.popping = false;
-		
 	},
 	createView : function(viewTypeName) {
 		var viewType = this._getViewTypeByName(viewTypeName);
@@ -146,13 +140,19 @@ enyo.kind({
 	/*
 	 * Pops a single view and destroys it.  A no-op if there are no views.
 	 */
-	_popSingleView : function() {
+	_popSingleView : function(inAnimated) {
 		if(this.getViewCount() === 0) {
 			return;
 		}
+		console.log("popSingle animated ", inAnimated)
 		var viewBeingPopped = this.getView();
-		console.log("Popping")
-		this.deleteView(viewBeingPopped);
+		if(inAnimated) {
+			console.log("to min");
+			console.log(viewBeingPopped)
+			viewBeingPopped.animateToMin();
+		} else {
+			this.deleteView(viewBeingPopped);
+		}
 	},
 	_getViewTypeByName : function(viewTypeName) {
 		var viewTypeToReturn;
