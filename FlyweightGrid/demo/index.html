@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>FlyweightGrid Demo</title>
+	
+	<!-- LOADING ENYO -->
+	<link href="http://enyojs.com/enyo-2.0b4/enyo.css" rel="stylesheet" type="text/css" />
+	<script src="http://enyojs.com/enyo-2.0b4/enyo.js" type="text/javascript"></script>
+	<script src="http://enyojs.com/lib/layout/fittable/package.js" type="text/javascript"></script>
+	<script src="http://enyojs.com/lib/layout/list/package.js" type="text/javascript"></script>
+	<script src="../FlyweightGrid/package.js" type="text/javascript"></script>
+	
+	<!-- MOBILE DEVICE VIEWPORT CONFIGURATION -->
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+</head>
+<body class="onyx" oncontextmenu="return false;">
+<script type="text/javascript">
+
+	
+	enyo.kind({
+		name: "FlyweightGridSample",
+		kind: "FittableRows",
+		components: [{
+			kind: "Scroller",
+			fit: true,
+			components: [{
+				name: "list",
+				kind: "newness.FlyweightGrid",
+				cells: 500,
+				minCellWidth: 128,
+				onSetupCell: "setupRow",
+				components: [{
+					style: "padding: 5px;background: blue; text-align: center; width: 100px; margin-top: 20px; margin-bottom: 20px; color: white;",
+					ontap: "rowTap",
+					components: [{
+						style: "width: 64px; height: 64px; margin-left: auto; margin-right: auto; border: 1px solid black; padding: 8px; background: red;"
+					}, {
+						name: "item"
+					}]
+				}]
+			}]
+		}],
+		create: function() {
+			this.inherited(arguments);
+			this.$.list.cellOffset = 0;
+		},
+		setupRow: function(inSender, inEvent) {
+			this.$.item.setContent("cell #" + inEvent.index);
+		},
+		rowTap: function(inSender, inEvent) {
+			alert("You Tapped Cell #" + inEvent.rowIndex);
+		}
+	});
+
+	
+	var app = new FlyweightGridSample();
+	app.renderInto(document.body);
+
+</script>
+</body>
+</html>
