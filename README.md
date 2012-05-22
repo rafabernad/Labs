@@ -6,6 +6,9 @@ Small Opensource stuff
 ### newness.InfiniteSlidingPane
 A sliding-driven paned view manager for [EnyoJS 2](http://www.enyojs.com).
 
+### newness.FlyWeightGrid
+A control that displays a repeating grid of cells. For [EnyoJS 2](http://www.enyojs.com).
+
 License
 -------
 
