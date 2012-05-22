@@ -37,10 +37,6 @@ A cell can be forced to render by calling the renderCell(inCell) method. In addi
 temporarily made interactive by calling the prepareCell(inCell) method. When interaction is complete, the
 lockCell method should be called.
 
-An FlyWeigh Grid is view selector that supports pane sliding, showing one view at a time.
-
-The Panes slide in/out when pushed/popped can be dragged around and swiped off. `newness.InfiniteSlidingPane`'s default view is `newness.InfiniteSlidingView` or any derivative from it.
-
 Dependencies
 ------------
 
