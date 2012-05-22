@@ -3,7 +3,7 @@ newness.InfiniteSlidingPane
 
 An InfiniteSlidingPane is view selector that supports pane sliding, showing one view at a time.
 
-The Panes slide in/out when pushed/popped can be dragged around and swiped off. `newness.InfiniteSlidingPane`'s default view is `newness.InfiniteSlidingView` or any derivative from it.
+The Panes slide in/out when pushed/popped can be dragged around and swiped off. `newness.InfiniteSlidingPane` uses `newness.InfiniteSlidingView` for showing views, or any derivative from it.
 
 Dependencies
 ------------
