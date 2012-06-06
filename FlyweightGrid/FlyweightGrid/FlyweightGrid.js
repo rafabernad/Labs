@@ -38,7 +38,8 @@ enyo.kind({
 		minCellWidth: 320
 	},
 	handlers: {
-		onSetupItem: "setupCell"
+		onSetupItem: "setupCell",
+        onSetupRow: "setupCell"
 	},
 	events: {
 		//* Fired once per cell at render-time, with event object: {index: <index of cell>}
