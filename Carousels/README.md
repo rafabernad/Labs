@@ -1,5 +1,4 @@
 
-
 newness.Carousel
 ===========================
 
@@ -51,7 +50,7 @@ A control that displays a scrolling list of views.  VirtualCarousel is optimized
 flyweight strategy but takes the same fact that object creation is expensive so instead
 of creating new view old view is being reused.
 
-To initialize VirtualCarousel, use `renderViews`.  The `onSetupView event
+To initialize VirtualCarousel, use `renderViews`.  The `onSetupView` event
 allows for updating view for a given view index.  The view returned in the event could contain
 old view that is not suitable for the given index, so is the user's responsiblitiy to update
 the view.  Here's a simple example:
