@@ -1,0 +1,106 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Enyo Carousel Sample</title>
+		<link rel="shortcut icon" href="assets/favicon.ico">
+		<!-- -->
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="viewport" content="width=device-width initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<!-- enyo (debug) -->
+		<link href="http://enyojs.com/enyo-2.0b5/enyo.css" rel="stylesheet" type="text/css" />
+		<script src="http://enyojs.com/enyo-2.0b5/enyo.js" type="text/javascript"></script>
+		<script src="http://enyojs.com/lib/onyx/package.js" type="text/javascript"></script>
+		<script src="http://enyojs.com/lib/layout/fittable/package.js" type="text/javascript"></script>
+		<script src="http://enyojs.com/lib/layout/panels/package.js" type="text/javascript"></script>
+		<script src="../Carousels/package.js" type="text/javascript"></script>
+
+	</head>
+	<style>
+		.newness-carousel {
+			height: 33%;
+			width: 33%;
+			min-height: 320px;
+			min-width: 320px;
+			display: inline-block;
+			margin: 30px;
+			border: 10px solid orange;
+		}
+		
+		.newness-carousel > * {
+			border: 2px solid #333;
+			font-size: 5em;
+			text-align: center;
+		}	
+	</style>
+	<body class="onyx enyo-unselectable">
+		<script>
+			enyo.kind({
+				name: "CarouselSample",
+				kind: "FittableRows",
+				components: [{
+					kind: "onyx.Toolbar",
+					components: [{
+						kind: "onyx.Button",
+						content: "Previous",
+						ontap: "goPrevious"
+					}, {
+						kind: "onyx.Button",
+						content: "Next",
+						ontap: "goNext"
+					}]
+				}, {
+					name: "carousel",
+					kind: "newness.Carousel",
+					onGetLeft: "getLeft",
+					onGetRight: "getRight"
+				}, {
+					name: "flyweightCarousel",
+					kind: "newness.FlyweightCarousel",
+					onSetupView: "setupView"
+				}],
+				create: function() {
+					this.inherited(arguments);
+					
+					//carousel setup
+					this.index = 1;
+					this.$.carousel.setCenterView(this.getView(this.index));
+					
+					//FlyweightCarouselSetup
+					this.flyweightIndex = 5;
+					this.$.flyweightCarousel.renderViews(this.flyweightIndex);
+				},
+				getView: function(inIndex) {
+					return {
+						content: inIndex
+					};
+				},
+				getLeft: function(inSender, inEvent) {
+					inEvent.snap && this.index--;
+					this.$.carousel.newView(inEvent.originator, this.getView(this.index - 1));
+					return true;
+				},
+				getRight: function(inSender, inEvent) {
+					inEvent.snap && this.index++;
+					this.$.carousel.newView(inEvent.originator, this.getView(this.index + 1));
+					return true;
+				},
+				setupView: function(inSender, inEvent) {
+					this.flyweightIndex = inEvent.viewIndex;
+					inEvent.originator.setContent(inEvent.viewIndex);
+					return true;
+				},
+				goPrevious: function(){
+					this.$.carousel.previous();
+					this.$.flyweightCarousel.previous();
+				},
+				goNext: function() {
+					this.$.carousel.next();
+					this.$.flyweightCarousel.next();
+				}
+			});				
+	
+			new CarouselSample({fit: true}).write();
+
+		</script>
+	</body>
+</html>
