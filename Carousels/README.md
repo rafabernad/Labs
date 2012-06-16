@@ -1,4 +1,3 @@
-
 newness.Carousel
 ===========================
 
@@ -41,6 +40,8 @@ Use setCenterView to set the center view, and the `onGetLeft` and `onGetRight` e
 	}
 
 
+
+
 newness.FlyweightCarousel
 ===========================
 
@@ -55,33 +56,23 @@ allows for updating view for a given view index.  The view returned in the event
 old view that is not suitable for the given index, so is the user's responsiblitiy to update
 the view.  Here's a simple example:
   
-	{name: "carousel", kind: "VirtualCarousel", flex: 1, onSetupView: "setupView"}
+	{name: "carousel", kind: "FlyweightCarousel", fit: true, onSetupView: "setupView"}
 
 	rendered: function() {
 		this.inherited(arguments);
 		var selectedViewIndex = 5;
 		this.$.carousel.renderViews(selectedViewIndex);
 	},
-	setupView: function(inSender, inView, inViewIndex) {
-		if (inViewIndex > 0 && inViewIndex < 30) {
-			inView.setHeader("Hello " + inViewIndex);
+	setupView: function(inSender, inEvent) {
+		if (inEvent.viewIndex > 0 && inEvent.viewIndex < 30) {
+			inEvent.originator.setHeader("Hello " + inEvent.viewIndex);
 			return true;
 		}
 	}
 	
 An `onSetupView` handler must return true to indicate that the given view should be rendered.
 
-The `onSnap` event fires when the user finishes dragging and snapping occurs.
-And the `onSnapFinish` fires when snapping and scroller animation completes.
-
 To get a handle of the currently displayed view, use `fetchCurrentView()`.
-For example, to get the current displayed view after snapping is completed:
-
-	{name: "carousel", kind: "VirtualCarousel", flex: 1, onSetupView: "setupView", onSnapFinish: "snapFinish"}
-	
-	snapFinish: function(inSender) {
-		var view = this.$.carousel.fetchCurrentView();
-	}
 
 To move the view programmatically, use `next()` or `previous()`.
 
