@@ -2,7 +2,7 @@ newness.Carousel
 ===========================
 
 
-A control that provides the ability to slide back and forth between different views without having to load all the views initially.
+An `Enyo.Panels` control that provides the ability to slide back and forth between different views without having to load all the views initially.
 
 A single carousel could contain thousands of views/images.  Loading all of them into memory at once would not be feasible.
 Carousel solves this problem by only holding onto the center view (C), the previous view (P), and the next view (N).
@@ -46,12 +46,12 @@ newness.FlyweightCarousel
 ===========================
 
 
-A control that displays a scrolling list of views.  VirtualCarousel is optimized such that only
-3 views are created even if the actual number of views is infinite.  VirtualCarousel doesn't employ
+An `Enyo.Panels` that displays a scrolling list of views.  FlyweightCarousel is optimized such that only
+3 views are created even if the actual number of views is infinite.  FlyweightCarousel doesn't employ
 flyweight strategy but takes the same fact that object creation is expensive so instead
 of creating new view old view is being reused.
 
-To initialize VirtualCarousel, use `renderViews`.  The `onSetupView` event
+To initialize FlyweightCarousel, use `renderViews`.  The `onSetupView` event
 allows for updating view for a given view index.  The view returned in the event could contain
 old view that is not suitable for the given index, so is the user's responsiblitiy to update
 the view.  Here's a simple example:
