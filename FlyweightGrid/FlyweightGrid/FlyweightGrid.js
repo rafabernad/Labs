@@ -38,7 +38,8 @@ enyo.kind({
 		minCellWidth: 320
 	},
 	handlers: {
-		onSetupRow: "setupCell"
+		onSetupItem: "setupCell",
+        onSetupRow: "setupCell"
 	},
 	events: {
 		//* Fired once per cell at render-time, with event object: {index: <index of cell>}
@@ -60,6 +61,7 @@ enyo.kind({
 		this.resizeHandler();
 	},
 	generateChildHtml: function() {
+        this.count = this.cells;
 		this.rows = this.cells;
 		this.rowOffset = this.cellOffset;
 		return this.inherited(arguments);
