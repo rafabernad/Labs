@@ -96,6 +96,7 @@ enyo.kind({
 			this._adjustViews();
 		}
 		this.inherited(arguments);
+		return true;
 	},
 	panelTransitionFinishHandler: function(inSender, inEvent) {
 		if (inEvent.fromIndex === 1) {
