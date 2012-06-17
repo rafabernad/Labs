@@ -49,7 +49,7 @@ newness.FlyweightCarousel
 An `Enyo.Panels` that displays a scrolling list of views.  FlyweightCarousel is optimized such that only
 3 views are created even if the actual number of views is infinite.  FlyweightCarousel doesn't employ
 flyweight strategy but takes the same fact that object creation is expensive so instead
-of creating new view old view is being reused.
+of creating new views each time, the same views are being reused.
 
 To initialize FlyweightCarousel, use `renderViews`.  The `onSetupView` event
 allows for updating view for a given view index.  The view returned in the event could contain
@@ -76,7 +76,9 @@ To get a handle of the currently displayed view, use `fetchCurrentView()`.
 
 To move the view programmatically, use `next()` or `previous()`.
 
-
+Dendencies
+----------
+[Enyo Panels Library](https://github.com/enyojs/layout/tree/master/panels)
 
 Demo
 ----
