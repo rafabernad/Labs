@@ -7,19 +7,16 @@ enyo.kind({
 		onTransitionStart: "panelTransitionStartHandler",
 		onTransitionFinish: "panelTransitionFinishHandler"
 	},
-	components: [{
+	kindComponents: [{
 		name: "left",
-		kind: "Control",
 		classes: "newness-carousel-page",
 		style: "width: 100%;"
 	}, {
 		name: "center",
-		kind: "Control",
 		classes: "newness-carousel-page",
 		style: "width: 100%;"
 	}, {
 		name: "right",
-		kind: "Control",
 		classes: "newness-carousel-page",
 		style: "width: 100%;"
 	}],
@@ -47,18 +44,18 @@ enyo.kind({
 	fetchCurrentView: function() {
 		return this.fetchView("center");
 	},
-	//* @protected
 	newView: function(inViewHolder, inInfo, inRender) {
 		if (inViewHolder === undefined) {
 			this._info = inInfo;
 		} else {
 			inViewHolder.setShowing(inInfo ? true : false);
 			if (inInfo) {
-				inViewHolder.destroyComponents();
+				inViewHolder.destroyClientControls();
 				inViewHolder.createComponent(inInfo, {
 					owner: this
 				});
-				inRender && inViewHolder.render();
+				//we need to render the entire control, or scrolling in left view will stop working
+				inRender && this.render();
 			}
 		}
 	},
@@ -69,8 +66,6 @@ enyo.kind({
 		inViewHolder.destroyClientControls();
 		inView.setContainer(inViewHolder);
 		inView.setParent(inViewHolder);
-		inViewHolder.render();
-
 	},
 	findView: function(inControl) {
 		var c = inControl.getControls();
@@ -92,10 +87,11 @@ enyo.kind({
 	},
 	dragstart: function(inSender, inEvent) {
 		//this ensures the dragstart point is always the center view (i.e. dragging is done too fast)
-		if (this.index !== this.centerIndex) {
+		/*if (this.index !== this.centerIndex) {
 			this._adjustViews();
-		}
+		}*/
 		this.inherited(arguments);
+		return true;
 	},
 	panelTransitionFinishHandler: function(inSender, inEvent) {
 		if (inEvent.fromIndex === 1) {
@@ -195,6 +191,7 @@ enyo.kind({
 				this.setIndexDirect(this.centerIndex);
 			}
 		}
+		
 	}
 });
 
