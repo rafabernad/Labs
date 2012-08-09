@@ -3,6 +3,9 @@ enyo.kind({
 	kind: "Panels",
 	arrangerKind: "CarouselArranger",
 	classes: "newness-carousel",
+	events: {
+		onViewIndexChanged: ""
+	},
 	handlers: {
 		onTransitionStart: "panelTransitionStartHandler",
 		onTransitionFinish: "panelTransitionFinishHandler"
@@ -50,10 +53,9 @@ enyo.kind({
 		} else {
 			inViewHolder.setShowing(inInfo ? true : false);
 			if (inInfo) {
+				if (!inInfo.owner) inInfo.owner = this;
 				inViewHolder.destroyClientControls();
-				inViewHolder.createComponent(inInfo, {
-					owner: this
-				});
+				inViewHolder.createComponent(inInfo, {});
 				//we need to render the entire control, or scrolling in left view will stop working
 				inRender && this.render();
 			}
@@ -75,21 +77,21 @@ enyo.kind({
 	},
 	previous: function() {
 		if (this.index !== this.centerIndex || this.$.left.showing) {
-			if(this.index !== this.centerIndex) this._adjustViews();
+			if (this.index !== this.centerIndex) this._adjustViews();
 			this.inherited(arguments);
 		}
 	},
 	next: function() {
 		if (this.index !== this.centerIndex || this.$.right.showing) {
-			if(this.index !== this.centerIndex) this._adjustViews();
+			if (this.index !== this.centerIndex) this._adjustViews();
 			this.inherited(arguments);
 		}
 	},
 	dragstart: function(inSender, inEvent) {
 		//this ensures the dragstart point is always the center view (i.e. dragging is done too fast)
-		/*if (this.index !== this.centerIndex) {
+		if (this.index !== this.centerIndex) {
 			this._adjustViews();
-		}*/
+		}
 		this.inherited(arguments);
 		return true;
 	},
@@ -154,19 +156,22 @@ enyo.kind({
 	@param {Object} inInfo A config block describing the view control.
 	*/
 	setCenterView: function(inInfo) {
-		this.doGetLeft({
+		this.$.left.setShowing(this.doGetLeft({
 			originator: this.$.left,
 			snap: false
-		});
+		}));
 		this.newView(this.$.center, inInfo);
-		this.doGetRight({
+		this.$.right.setShowing(this.doGetRight({
 			originator: this.$.right,
 			snap: false
-		});
+		}));
 		this.index = this.centerIndex;
 		if (this.hasNode()) {
 			this.render();
 		}
+	},
+	updateView: function(inView, inInfo) {
+		this.newView(this.$[inView], inInfo, true);
 	},
 	//* @protected
 	_adjustViews: function() {
@@ -181,7 +186,7 @@ enyo.kind({
 			});
 		}
 		if (this.index != this.centerIndex) {
-			if (addView) {
+			if (addView === true) {
 				var vh1 = goRight ? this.$.right : this.$.left;
 				var vh2 = goRight ? this.$.left : this.$.right;
 				var v = this.$.center;
@@ -191,62 +196,91 @@ enyo.kind({
 				this.setIndexDirect(this.centerIndex);
 			}
 		}
-		
 	}
 });
 
 enyo.kind({
 	name: "newness.FlyweightCarousel",
 	kind: newness.CarouselInternal,
+	published: {
+		viewKind: null
+	},
 	events: {
 		onSetupView: ""
 	},
-	viewControl: {kind: enyo.Control},
 	viewIndex: 0,
 	/**
 	 Initializes the carousel.  This will trigger <code>onSetupView</code> event to be fired.
 	 */
+	create: function() {
+		this.inherited(arguments);
+		this.viewKindChanged();
+	},
+	viewKindChanged: function(inOldViewKind) {
+		if (this.viewKind === null) {
+			console.error("No viewKind defined");
+		} else {
+			this.createViewsFromViewKind(true);
+		}
+	},
 	renderViews: function(inIndex, inForceCreate) {
+		this.oldIndex = null;
 		this.viewIndex = inIndex || 0;
 		this.index = this.centerIndex;
-		this.createViewsFromViewControl(inForceCreate);
-		this.updateView(this.$.left, this.viewIndex-1, true);
+		this.createViewsFromViewKind(inForceCreate);
+		this.updateView(this.$.left, this.viewIndex - 1, true);
 		this.updateView(this.$.center, this.viewIndex, true);
-		this.updateView(this.$.right, this.viewIndex+1, true);
+		this.updateView(this.$.right, this.viewIndex + 1, true);
 	},
 	//* @protected
-	createViewsFromViewControl: function(inForce) {
+	createViewsFromViewKind: function(inForce) {
 		if (!this._viewsCreated || inForce) {
-			this.newView(this.$.left, this.viewControl);
-			this.newView(this.$.center, this.viewControl);
-			this.newView(this.$.right, this.viewControl);
+			this.newView(this.$.left, this.viewKind);
+			this.newView(this.$.center, this.viewKind);
+			this.newView(this.$.right, this.viewKind);
 			if (this.hasNode()) {
 				this.render();
 			}
 			this._viewsCreated = true;
 		}
 	},
+	moveView: function(inViewHolder, inView) {
+		if (!inViewHolder.showing) {
+			inViewHolder.show();
+		}
+		inView.setContainer(inViewHolder);
+		inView.setParent(inViewHolder);
+	},
 	updateView: function(inViewHolder, inViewIndex, inSetup) {
-		var show = this.doSetupView({originator: this.findView(inViewHolder), viewIndex:inViewIndex});
+		var show = this.doSetupView({
+			originator: this.findView(inViewHolder),
+			viewIndex: inViewIndex
+		});
+		if (!show && this.oldIndex) this.viewIndex = this.oldIndex;
 		inSetup && inViewHolder.setShowing(show ? true : false);
 		show && this.findView(inViewHolder).render();
+		this.flow();
+		this.reflow();
 		return show;
 	},
 	_adjustViews: function() {
-		
+		this.oldIndex = this.viewIndex;
 		var goRight = this.index > this.centerIndex;
 		var vh1 = goRight ? this.$.right : this.$.left;
 		var vh2 = goRight ? this.$.left : this.$.right;
 		goRight ? ++this.viewIndex : --this.viewIndex;
+		this.doViewIndexChanged({
+			viewIndex: this.viewIndex
+		});
 		if (this.index !== this.centerIndex) {
-			if (this.updateView(vh2, (goRight ? this.viewIndex+1 : this.viewIndex-1))) {
+			if (this.updateView(vh2, (goRight ? this.viewIndex + 1 : this.viewIndex - 1))) {
 				var v = this.findView(this.$.center);
 				this.moveView(this.$.center, this.findView(vh1));
 				this.moveView(vh1, this.findView(vh2));
 				this.moveView(vh2, v);
+				this.render();
 				this.setIndexDirect(this.centerIndex);
 			}
 		}
-		
 	}
 });
