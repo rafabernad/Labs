@@ -147,7 +147,11 @@ enyo.kind({
 		/**
 		Gets the right view and also indicates if it is fired after a right transition.
 		*/
-		onGetRight: ""
+		onGetRight: "",
+		/**
+		Fired when user flips a view different from the center view, (i.e., when swipping from the leftmost and right most views)
+		*/
+		onViewChanged: ""
 	},
 	/**
 	Sets the view to be used as the center view.
@@ -173,6 +177,12 @@ enyo.kind({
 	updateView: function(inView, inInfo) {
 		this.newView(this.$[inView], inInfo, true);
 	},
+	panelTransitionFinishHandler: function(inSender, inEvent) {
+		if (inEvent.fromIndex !== 1) {
+			this.doViewChanged({fromView: (inEvent.fromIndex > inEvent.toIndex ? "Right" : "Left")});
+		}
+		this.inherited(arguments);
+	},
 	//* @protected
 	_adjustViews: function() {
 		//var panels = this.getPanels();
@@ -195,7 +205,7 @@ enyo.kind({
 				this.newView(vh1, this._info, true);
 				this.setIndexDirect(this.centerIndex);
 			}
-		}
+		}	
 	}
 });
 
