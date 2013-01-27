@@ -69,6 +69,7 @@ responsiblitiy to update the view.  Here's a simple example:
 			inEvent.originator.setHeader("Hello " + inEvent.viewIndex);
 			return true;
 		}
+		return false;
 	}
 	
 An `onSetupView` handler must return true to indicate that the given view should be rendered.
