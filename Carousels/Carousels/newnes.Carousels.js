@@ -1,9 +1,13 @@
 enyo.kind({
-	name: "newness.CarouselInternal",
+	name: "newnes.CarouselInternal",
 	kind: "Panels",
 	arrangerKind: "CarouselArranger",
+	//arrangerKind: "LeftRightArranger"
 	classes: "newness-carousel",
 	events: {
+		/*
+		Fired when center view is changed
+		*/
 		onViewIndexChanged: ""
 	},
 	handlers: {
@@ -12,18 +16,15 @@ enyo.kind({
 	},
 	kindComponents: [{
 		name: "left",
-		classes: "newness-carousel-page",
-		style: "width: 100%;"
+		classes: "newness-carousel-page"
 	}, {
 		name: "center",
-		classes: "newness-carousel-page",
-		style: "width: 100%;"
+		classes: "newness-carousel-page"
 	}, {
 		name: "right",
-		classes: "newness-carousel-page",
-		style: "width: 100%;"
+		classes: "newness-carousel-page"
 	}],
-	centerIndex: 1,
+	_centerIndex: 1,
 	/**
 	Fetches the view corresponding to the view position "center", "left" or "right".
 	"center" would always refer to the view currently displayed.  "left" and "right" would be the left/right of currently displayed.
@@ -53,10 +54,8 @@ enyo.kind({
 		} else {
 			inViewHolder.setShowing(inInfo ? true : false);
 			if (inInfo) {
-				if (!inInfo.owner) inInfo.owner = this;
 				inViewHolder.destroyClientControls();
-				inViewHolder.createComponent(inInfo, {});
-				//we need to render the entire control, or scrolling in left view will stop working
+				inViewHolder.createComponent(inInfo, {owner: this.owner});
 				inRender && this.render();
 			}
 		}
@@ -76,27 +75,38 @@ enyo.kind({
 		}
 	},
 	previous: function() {
-		if (this.index !== this.centerIndex || this.$.left.showing) {
-			if (this.index !== this.centerIndex) this._adjustViews();
+		if (this.index !== this._centerIndex || this.$.left.showing) {
+			if (this.index !== this._centerIndex) this._adjustViews();
+			this.bAdjustViews = true;
 			this.inherited(arguments);
 		}
 	},
 	next: function() {
-		if (this.index !== this.centerIndex || this.$.right.showing) {
-			if (this.index !== this.centerIndex) this._adjustViews();
+		if (this.index !== this._centerIndex || this.$.right.showing) {
+			if (this.index !== this._centerIndex) this._adjustViews();
+			this.bAdjustViews = true;
 			this.inherited(arguments);
 		}
 	},
-	dragstart: function(inSender, inEvent) {
+	/*dragstart: function(inSender, inEvent) {
 		//this ensures the dragstart point is always the center view (i.e. dragging is done too fast)
-		if (this.index !== this.centerIndex) {
-			this._adjustViews();
+		if (this.index !== this._centerIndex) {
+			this.bAdjustViews = true;
 		}
 		this.inherited(arguments);
 		return true;
+	},*/
+	dragfinish: function(inSender, inEvent) {
+		//this ensures the dragstart point is always the center view (i.e. dragging is done too fast)
+		this.inherited(arguments);
+		if (this.index !== this._centerIndex) {
+			this.bAdjustViews = true;
+		}
+		return true;
 	},
-	panelTransitionFinishHandler: function(inSender, inEvent) {
-		if (inEvent.fromIndex === 1) {
+	panelTransitionFinishHandler: function() {
+		if(this.bAdjustViews === true) {
+			this.bAdjustViews = false;
 			this._adjustViews();
 		}
 	}
@@ -137,8 +147,8 @@ Use <code>setCenterView</code> to set the center view, and the <code>onGetLeft</
 	}
 */
 enyo.kind({
-	name: "newness.Carousel",
-	kind: newness.CarouselInternal,
+	name: "newnes.Carousel",
+	kind: newnes.CarouselInternal,
 	events: {
 		/**
 		Gets the left view and also indicates if it is fired after a left transition.
@@ -147,11 +157,7 @@ enyo.kind({
 		/**
 		Gets the right view and also indicates if it is fired after a right transition.
 		*/
-		onGetRight: "",
-		/**
-		Fired when user flips a view different from the center view, (i.e., when swipping from the leftmost and right most views)
-		*/
-		onViewChanged: ""
+		onGetRight: ""
 	},
 	/**
 	Sets the view to be used as the center view.
@@ -169,7 +175,7 @@ enyo.kind({
 			originator: this.$.right,
 			snap: false
 		}));
-		this.index = this.centerIndex;
+		this.setIndexDirect(this._centerIndex);
 		if (this.hasNode()) {
 			this.render();
 		}
@@ -179,23 +185,22 @@ enyo.kind({
 	},
 	panelTransitionFinishHandler: function(inSender, inEvent) {
 		if (inEvent.fromIndex !== 1) {
-			this.doViewChanged({fromView: (inEvent.fromIndex > inEvent.toIndex ? "Right" : "Left")});
+			this.doViewIndexChanged({fromView: (inEvent.fromIndex > inEvent.toIndex ? "Right" : "Left")});
 		}
 		this.inherited(arguments);
 	},
 	//* @protected
 	_adjustViews: function() {
-		//var panels = this.getPanels();
-		var goRight = this.index > this.centerIndex;
+		var goRight = this.index > this._centerIndex;
 
 		var addView = false;
-		if (this.index != this.centerIndex || !this._info) {
+		if (this.index != this._centerIndex || !this._info) {
 			addView = this["doGet" + (goRight ? "Right" : "Left")]({
 				originator: undefined,
 				snap: true
 			});
 		}
-		if (this.index != this.centerIndex) {
+		if (this.index != this._centerIndex) {
 			if (addView === true) {
 				var vh1 = goRight ? this.$.right : this.$.left;
 				var vh2 = goRight ? this.$.left : this.$.right;
@@ -203,22 +208,22 @@ enyo.kind({
 				this.moveView(vh2, this.findView(v));
 				this.moveView(v, this.findView(vh1));
 				this.newView(vh1, this._info, true);
-				this.setIndexDirect(this.centerIndex);
+				this.setIndexDirect(this._centerIndex);
 			}
 		}	
 	}
 });
 
 enyo.kind({
-	name: "newness.FlyweightCarousel",
-	kind: newness.CarouselInternal,
+	name: "newnes.FlyweightCarousel",
+	kind: newnes.CarouselInternal,
 	published: {
-		viewKind: null
+		viewKind: null,
+		viewIndex: 0
 	},
 	events: {
 		onSetupView: ""
 	},
-	viewIndex: 0,
 	/**
 	 Initializes the carousel.  This will trigger <code>onSetupView</code> event to be fired.
 	 */
@@ -226,24 +231,28 @@ enyo.kind({
 		this.inherited(arguments);
 		this.viewKindChanged();
 	},
+	viewIndexChanged: function() {
+		this._renderViews(this.viewIndex);
+	},
 	viewKindChanged: function(inOldViewKind) {
 		if (this.viewKind === null) {
 			console.error("No viewKind defined");
 		} else {
-			this.createViewsFromViewKind(true);
+			this._createViewsFromViewKind(true);
 		}
 	},
-	renderViews: function(inIndex, inForceCreate) {
+	//* @protected
+	_renderViews: function(inIndex, inForceCreate) {
 		this.oldIndex = null;
 		this.viewIndex = inIndex || 0;
-		this.index = this.centerIndex;
-		this.createViewsFromViewKind(inForceCreate);
+		this.index = this._centerIndex;
+		this._createViewsFromViewKind(inForceCreate);
 		this.updateView(this.$.left, this.viewIndex - 1, true);
 		this.updateView(this.$.center, this.viewIndex, true);
 		this.updateView(this.$.right, this.viewIndex + 1, true);
 	},
-	//* @protected
-	createViewsFromViewKind: function(inForce) {
+	
+	_createViewsFromViewKind: function(inForce) {
 		if (!this._viewsCreated || inForce) {
 			this.newView(this.$.left, this.viewKind);
 			this.newView(this.$.center, this.viewKind);
@@ -275,21 +284,21 @@ enyo.kind({
 	},
 	_adjustViews: function() {
 		this.oldIndex = this.viewIndex;
-		var goRight = this.index > this.centerIndex;
+		var goRight = this.index > this._centerIndex;
 		var vh1 = goRight ? this.$.right : this.$.left;
 		var vh2 = goRight ? this.$.left : this.$.right;
 		goRight ? ++this.viewIndex : --this.viewIndex;
 		this.doViewIndexChanged({
 			viewIndex: this.viewIndex
 		});
-		if (this.index !== this.centerIndex) {
+		if (this.index !== this._centerIndex) {
 			if (this.updateView(vh2, (goRight ? this.viewIndex + 1 : this.viewIndex - 1))) {
 				var v = this.findView(this.$.center);
 				this.moveView(this.$.center, this.findView(vh1));
 				this.moveView(vh1, this.findView(vh2));
 				this.moveView(vh2, v);
 				this.render();
-				this.setIndexDirect(this.centerIndex);
+				this.setIndexDirect(this._centerIndex);
 			}
 		}
 	}
