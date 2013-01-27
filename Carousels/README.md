@@ -19,7 +19,8 @@ To initialize a carousel:
 
 	{name: "carousel", kind: "newness.Carousel", fit: true, onGetLeft: "getLeft", onGetRight: "getRight"}
 
-Use setCenterView to set the center view, and the `onGetLeft` and `onGetRight` events to build a scrolling list of views.
+Use `setCenterView` to set the center view, and the `onGetLeft` and `onGetRight` events to build a scrolling list of views.
+Each view is created specifically for each page, so you can use diferent kinds for different pages.
 
 	create: function() {
 		this.inherited(arguments);
@@ -51,17 +52,17 @@ An `Enyo.Panels` that displays a scrolling list of views.  FlyweightCarousel is 
 flyweight strategy but takes the same fact that object creation is expensive so instead
 of creating new views each time, the same views are being reused.
 
-To initialize FlyweightCarousel, use `renderViews`.  The `onSetupView` event
-allows for updating view for a given view index.  The view returned in the event could contain
-old view that is not suitable for the given index, so is the user's responsiblitiy to update
-the view.  Here's a simple example:
+To initialize FlyweightCarousel, use `setViewIndex`.  The `onSetupView` event
+allows for updating view for a given view index. As FlyweightCarousel reuses continously the same ser of views,
+the view returned in the event could contain old view that is not suitable for the given index, so is the parent kind's
+responsiblitiy to update the view.  Here's a simple example:
   
-	{name: "carousel", kind: "FlyweightCarousel", fit: true, onSetupView: "setupView"}
+	{name: "carousel", kind: "FlyweightCarousel", fit: true, onSetupView: "setupView", viewKind: {kind: "myKind"}}
 
 	rendered: function() {
 		this.inherited(arguments);
 		var selectedViewIndex = 5;
-		this.$.carousel.renderViews(selectedViewIndex);
+		this.$.carousel.setViewIndex(selectedViewIndex);
 	},
 	setupView: function(inSender, inEvent) {
 		if (inEvent.viewIndex > 0 && inEvent.viewIndex < 30) {
@@ -75,6 +76,8 @@ An `onSetupView` handler must return true to indicate that the given view should
 To get a handle of the currently displayed view, use `fetchCurrentView()`.
 
 To move the view programmatically, use `next()` or `previous()`.
+
+An `onViewIndexChanged` event gets fired each time the center view is changed.
 
 Dendencies
 ----------
