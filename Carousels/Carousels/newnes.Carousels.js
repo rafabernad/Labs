@@ -88,16 +88,7 @@ enyo.kind({
 			this.inherited(arguments);
 		}
 	},
-	/*dragstart: function(inSender, inEvent) {
-		//this ensures the dragstart point is always the center view (i.e. dragging is done too fast)
-		if (this.index !== this._centerIndex) {
-			this.bAdjustViews = true;
-		}
-		this.inherited(arguments);
-		return true;
-	},*/
 	dragfinish: function(inSender, inEvent) {
-		//this ensures the dragstart point is always the center view (i.e. dragging is done too fast)
 		this.inherited(arguments);
 		if (this.index !== this._centerIndex) {
 			this.bAdjustViews = true;
@@ -189,7 +180,6 @@ enyo.kind({
 		}
 		this.inherited(arguments);
 	},
-	//* @protected
 	_adjustViews: function() {
 		var goRight = this.index > this._centerIndex;
 
@@ -241,7 +231,6 @@ enyo.kind({
 			this._createViewsFromViewKind(true);
 		}
 	},
-	//* @protected
 	_renderViews: function(inIndex, inForceCreate) {
 		this.oldIndex = null;
 		this.viewIndex = inIndex || 0;
