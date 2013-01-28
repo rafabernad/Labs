@@ -250,6 +250,9 @@ enyo.kind({
 		this.updateView(this.$.left, this.viewIndex - 1, true);
 		this.updateView(this.$.center, this.viewIndex, true);
 		this.updateView(this.$.right, this.viewIndex + 1, true);
+		this.doViewIndexChanged({
+			viewIndex: this.viewIndex
+		});
 	},
 	
 	_createViewsFromViewKind: function(inForce) {
