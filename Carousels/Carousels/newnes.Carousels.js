@@ -2,7 +2,6 @@ enyo.kind({
 	name: "newnes.CarouselInternal",
 	kind: "Panels",
 	arrangerKind: "CarouselArranger",
-	//arrangerKind: "LeftRightArranger"
 	classes: "newness-carousel",
 	events: {
 		/*
