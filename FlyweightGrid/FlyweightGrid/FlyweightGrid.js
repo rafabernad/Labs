@@ -47,7 +47,7 @@ enyo.kind({
 	},
 	initComponents: function() {
 		this.inherited(arguments);
-		this.$.client.setClasses("newness-flyweightgrid-cell");
+		this.$.client.setClassAttribute("newness-flyweightgrid-cell");
 	},
 	rendered: function() {
 		this.inherited(arguments);
