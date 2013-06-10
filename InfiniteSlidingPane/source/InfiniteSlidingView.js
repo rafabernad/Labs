@@ -19,7 +19,7 @@
 
 enyo.kind({
 	name : "newness.InfiniteSlidingView",
-	kind : "onyx.Slideable",
+	kind : "Slideable",
 	value : 100,
 	max : 100,
 	unit : "%",
